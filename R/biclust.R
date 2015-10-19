@@ -70,10 +70,11 @@ biclust_dense <- function(x, row_clusters, col_clusters,
     col_cl0 <- col$clusters - 1L
 
     best <- NULL
-
+    ans.seq <- rep(NA, nstart)
     for (start in seq_len(nstart)) {
         ans <- .Call(C_biclust_dense, x, K, row_cl0, L, col_cl0,
                      family, epsilon, maxit, trace)
+        ans.seq[start] <- ans$loglik
         if (start == 1 || ans$loglik > best$loglik) {
             best <- ans
         }
@@ -96,6 +97,8 @@ biclust_dense <- function(x, row_clusters, col_clusters,
 
     ans$col_means <- ans$col_sums / ans$col_sizes
     ans$col_means[ans$col_sizes == 0] <- NA
+    
+    ans$loglik.seq <- ans.seq
 
     ans
 }
